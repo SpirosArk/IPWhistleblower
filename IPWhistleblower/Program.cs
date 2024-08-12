@@ -23,7 +23,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddHttpClient("DefaultClient");
 builder.Services.AddTransient<IIPInformationService, IPInformationService>();
 builder.Services.AddTransient<IIPAddressService, IPAddressService>();
+
 builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<ICacheService, CacheService>();
 
 var app = builder.Build();
 

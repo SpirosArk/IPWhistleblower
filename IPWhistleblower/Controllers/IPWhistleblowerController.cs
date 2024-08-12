@@ -1,5 +1,7 @@
+using Azure;
 using IPWhistleblower.Helpers;
 using IPWhistleblower.Interfaces;
+using IPWhistleblower.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Memory;
@@ -14,38 +16,44 @@ namespace IPWhistleblower.Controllers
         private readonly IIPAddressService _ipAddressService;
         private readonly IIPInformationService _informationService;
         private readonly ApplicationDbContext _context;
-        private readonly IMemoryCache _cache;
+        private readonly ICacheService _cacheService;
 
-        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, IMemoryCache cache)
+        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, ICacheService cacheService)
         {
             _informationService = IPService;
             _context = context;
             _ipAddressService = ipAddressService;
-            _cache = cache;
+            _cacheService = cacheService;
         }
 
         [HttpGet(Name = "/api/ipinfo/{ipAddress}")]
         public async Task<IActionResult> Get(string ipAddress)
         {
-            if (!IPAddress.TryParse(ipAddress, out var _ ))
+            if (!IPAddress.TryParse(ipAddress, out var _ ))                                             //Validation for quicker response
                 return BadRequest(new { Message = "Invalid IP address format." });
 
-            //if (ipAddress in cache)
-            //return it;
+            //var cacheKey = $"IPAddress_{ipAddress}";
+
+            var cachedIP = _cacheService.Get<IP2CResponse>($"IPAddress_{ipAddress}");  //1st Search The Cache with the selected key
+
+            if (cachedIP != null)
+                return Ok(cachedIP);
 
 
-            var ipAddressFromDb = await _context.IPAddresses.Where(address => address.IP == ipAddress) //1 ii)
+            var ipAddressFromDb = await _context.IPAddresses.Where(address => address.IP == ipAddress)  //2nd search in database
                                                             .SingleOrDefaultAsync();  //Think Single here works better instead of First as we should not have double entries
             if (ipAddressFromDb != null)
                 return Ok(ipAddressFromDb);
-           
 
-            var newAddressInfo = await _informationService.GetAddressInfoAsync(ipAddress); //1 iii)
+
+            var newAddressInfo = await _informationService.GetAddressInfoAsync(ipAddress);              //3rd do an API call 
             if (newAddressInfo != null)
-                await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);    //a)
-
-
-
+            {
+                await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);                 //Save to db
+                _cacheService.Set($"IPAddress_{ipAddress}", newAddressInfo,                  //Save to cache
+                                             TimeSpan.FromHours(50),
+                                             TimeSpan.FromMinutes(20)); ////TODO: Change Expiration times
+            }
             return Ok(newAddressInfo);
 
         }
