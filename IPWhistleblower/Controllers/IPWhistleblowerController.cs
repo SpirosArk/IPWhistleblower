@@ -32,14 +32,14 @@ namespace IPWhistleblower.Controllers
 
             //var cacheKey = $"IPAddress_{ipAddress}";
 
-            var cachedIP = _cacheService.Get<IP2CResponse>($"IPAddress_{ipAddress}");                   //1st Search The Cache with the selected key
+            var cachedIP = _cacheService.Get<IP2CResponse>($"IPAddress_{ipAddress}");                   //1st search Cache with the selected key
 
             if (cachedIP != null)
                 return Ok(cachedIP);
 
 
-            var ipAddressFromDb = await _context.IPAddresses.Where(address => address.IP == ipAddress)  //2nd search in database
-                                                            .SingleOrDefaultAsync();                    //Think Single here works better instead of First as we should not have double entries
+            var ipAddressFromDb = await _context.IPAddresses.Where(address => address.IP == ipAddress)  //2nd search in Database
+                                                            .SingleOrDefaultAsync();                    //think Single here works better instead of First as we should not have double entries
             if (ipAddressFromDb != null)
                 return Ok(ipAddressFromDb);
 
@@ -47,10 +47,10 @@ namespace IPWhistleblower.Controllers
             var newAddressInfo = await _informationService.GetAddressInfoAsync(ipAddress);              //3rd do an API call 
             if (newAddressInfo != null)
             {
-                await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);                 //Save to db
-                _cacheService.Set($"IPAddress_{ipAddress}", newAddressInfo,                             //Save to cache
+                await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);                 //save in Database
+                _cacheService.Set($"IPAddress_{ipAddress}", newAddressInfo,                             //save in Cache
                                              TimeSpan.FromHours(50),
-                                             TimeSpan.FromMinutes(20));                                 //ToDo: Set Expiration time after implementation
+                                             TimeSpan.FromMinutes(20));                                 //ToDo: set expiration time after implementation
             }
             return Ok(newAddressInfo);
 
