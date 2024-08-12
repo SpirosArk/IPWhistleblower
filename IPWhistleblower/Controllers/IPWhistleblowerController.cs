@@ -1,16 +1,11 @@
 using System.Net;
+using System.Data;
+using IPWhistleblower.Data;
 using IPWhistleblower.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using IPWhistleblower.Data;
-using Microsoft.Data.SqlClient;
-using Microsoft.Extensions.Configuration;
-using System.Data;
-using IPWhistleblower.Models;
-using Microsoft.IdentityModel.Tokens;
-using System.Data.Common;
 
 namespace IPWhistleblower.Controllers
 {
