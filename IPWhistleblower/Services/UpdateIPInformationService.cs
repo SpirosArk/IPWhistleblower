@@ -1,9 +1,9 @@
-﻿using IPWhistleblower.Helpers;
-using IPWhistleblower.Services;
+﻿using IPWhistleblower.Data;
+using IPWhistleblower.Helpers;
 using IPWhistleblower.Entities;
+using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using IPWhistleblower.Data;
 
 public class UpdateIPInformationService
 {
@@ -52,14 +52,15 @@ public class UpdateIPInformationService
     {
         var currentCountry = await _context.Countries.FindAsync(ipAddress.CountryId);
 
-        if (currentCountry == null)
+        return currentCountry switch
         {
-            return true;
-        }
-
-        return currentCountry.TwoLetterCode != latestInfo.TwoLetterCode ||
-               currentCountry.ThreeLetterCode != latestInfo.ThreeLetterCode ||
-               currentCountry.Name != latestInfo.CountryName;
+            null => true,
+            var country when
+                country.TwoLetterCode != latestInfo.TwoLetterCode ||
+                country.ThreeLetterCode != latestInfo.ThreeLetterCode ||
+                country.Name != latestInfo.CountryName => true,
+            _ => false 
+        };
     }
 
     private async Task<int> GetCountryIdAsync(IP2CResponse ip2cResponse)
@@ -67,20 +68,19 @@ public class UpdateIPInformationService
         var country = await _context.Countries
                                      .FirstOrDefaultAsync(c => c.TwoLetterCode == ip2cResponse.TwoLetterCode);
 
-        if (country == null)
+        if (country != null)
+            return country.Id;
+
+        country = new Country
         {
-            country = new Country
-            {
-                Name = ip2cResponse.CountryName,
-                TwoLetterCode = ip2cResponse.TwoLetterCode,
-                ThreeLetterCode = ip2cResponse.ThreeLetterCode,
-                CreatedAt = DateTime.UtcNow
-            };
+            Name = ip2cResponse.CountryName,
+            TwoLetterCode = ip2cResponse.TwoLetterCode,
+            ThreeLetterCode = ip2cResponse.ThreeLetterCode,
+            CreatedAt = DateTime.UtcNow
+        };
 
-            await _context.Countries.AddAsync(country);
-            await _context.SaveChangesAsync();
-        }
-
+        await _context.Countries.AddAsync(country);
+        await _context.SaveChangesAsync();
         return country.Id;
     }
 }
