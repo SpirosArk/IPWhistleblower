@@ -27,6 +27,9 @@ builder.Services.AddTransient<IIPAddressService, IPAddressService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddSingleton<ICacheService, CacheService>();
 
+builder.Services.AddTransient<IReportService>(provider =>
+            new ReportService(builder.Configuration.GetConnectionString("DefaultConnection")));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())

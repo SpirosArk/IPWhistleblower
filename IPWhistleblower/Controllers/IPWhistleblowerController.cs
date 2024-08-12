@@ -15,14 +15,17 @@ namespace IPWhistleblower.Controllers
         private readonly IIPInformationService _informationService;
         private readonly ApplicationDbContext _context;
         private readonly ICacheService _cacheService;
+        private readonly IReportService _reportService;
 
-        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, ICacheService cacheService)
+        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, ICacheService cacheService, IReportService reportService)
         {
             _informationService = IPService;
             _context = context;
             _ipAddressService = ipAddressService;
             _cacheService = cacheService;
+            _reportService = reportService;
         }
+
 
         [HttpGet(Name = "/api/ipinfo/{ipAddress}")]
         public async Task<IActionResult> Get(string ipAddress)
@@ -55,6 +58,13 @@ namespace IPWhistleblower.Controllers
             }
             return Ok(newAddressInfo);
 
+        }
+
+        [HttpGet("report")]
+        public async Task<IActionResult> GetReport([FromQuery] string[] countryCodes)
+        {
+            var countryReports = await _reportService.GetCountryReportsAsync(countryCodes);
+            return Ok(countryReports);
         }
     }
 }
