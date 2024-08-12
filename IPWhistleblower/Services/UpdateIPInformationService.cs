@@ -10,7 +10,7 @@ public class UpdateIPInformationService
     private readonly ApplicationDbContext _context;
     private readonly IIPInformationService _ipInformationService;
     private readonly ICacheService _cacheService;
-    private const int _batchSize = 100; // Define the batch size for processing
+    private const int _batchSize = 100; 
 
     public UpdateIPInformationService(ApplicationDbContext context, IIPInformationService ipInformationService, ICacheService cacheService)
     {
@@ -42,7 +42,7 @@ public class UpdateIPInformationService
                     _context.IPAddresses.Update(ipAddress);
                     await _context.SaveChangesAsync();
 
-                    _cacheService.Remove($"IPAddress_{ipAddress.IP}");
+                    _cacheService.Remove($"IPAddress_{ipAddress.IP}");  //Invalidate cache if changes were found
                 }
             }
         }
@@ -65,6 +65,9 @@ public class UpdateIPInformationService
 
     private async Task<int> GetCountryIdAsync(IP2CResponse ip2cResponse)
     {
+        string truncatedCountryName = TruncateString(ip2cResponse.CountryName, 50);
+
+
         var country = await _context.Countries
                                      .FirstOrDefaultAsync(c => c.TwoLetterCode == ip2cResponse.TwoLetterCode);
 
@@ -73,7 +76,7 @@ public class UpdateIPInformationService
 
         country = new Country
         {
-            Name = ip2cResponse.CountryName,
+            Name = truncatedCountryName,
             TwoLetterCode = ip2cResponse.TwoLetterCode,
             ThreeLetterCode = ip2cResponse.ThreeLetterCode,
             CreatedAt = DateTime.UtcNow
@@ -83,4 +86,14 @@ public class UpdateIPInformationService
         await _context.SaveChangesAsync();
         return country.Id;
     }
+
+
+    //This was used because the seeded db has set Name as nvarchar 50 so exceptions were thrown during PeriodicJobServiceExecution
+    string TruncateString(string input, int maxLength) =>
+    input switch
+    {
+        null => null,
+        _ when input.Length > maxLength => input.Substring(0, maxLength),
+        _ => input
+    };
 }

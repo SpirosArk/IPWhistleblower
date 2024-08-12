@@ -8,8 +8,8 @@ namespace IPWhistleblower.Services
         private readonly HttpClient _httpClient;
 
         public IPInformationService(IHttpClientFactory httpClientFactory)
-        {
-            _httpClient = httpClientFactory.CreateClient("DefaultClient"); //TODO: Change this client maybe to a custom client for the service/ip info endpoint
+         {
+            _httpClient = httpClientFactory.CreateClient("DefaultClient"); 
         }
 
         public async Task<IP2CResponse> GetAddressInfoAsync(string ipAddress)
@@ -25,7 +25,6 @@ namespace IPWhistleblower.Services
 
             return ip2cResponse;
 
-            //throw new Exception("Unexpected response format."); 
         }
     }
 }

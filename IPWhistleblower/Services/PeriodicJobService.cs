@@ -1,11 +1,11 @@
 ﻿public class PeriodicJobService : IHostedService, IDisposable
 {
     private Timer _timer;
-    private readonly UpdateIPInformationService _updateIPInformationService;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    public PeriodicJobService(UpdateIPInformationService updateIPInformationService)
+    public PeriodicJobService(IServiceScopeFactory serviceScopeFactory)
     {
-        _updateIPInformationService = updateIPInformationService;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public Task StartAsync(CancellationToken cancellationToken)
@@ -16,7 +16,12 @@
 
     private async void DoWork(object state)
     {
-        await _updateIPInformationService.UpdateIPInformationAsync();
+        //This was introduced to avoid the di lifetime conflict, that Singleton PeriodicJobService had with a scoped ApplicationDbContext 
+        using (var scope = _serviceScopeFactory.CreateScope())
+        {
+            var updateIPInformationService = scope.ServiceProvider.GetRequiredService<UpdateIPInformationService>();
+            await updateIPInformationService.UpdateIPInformationAsync();
+        }
     }
 
     public Task StopAsync(CancellationToken cancellationToken)

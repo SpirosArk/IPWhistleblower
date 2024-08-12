@@ -2,8 +2,8 @@
 {
     public class CountryReport
     {
-        public string CountryName { get; set; }
+        public string Name { get; set; }
         public int AddressesCount { get; set; }
-        public DateTime LastAddressUpdated { get; set; }
+        public DateTime? LastAddressUpdated { get; set; }
     }
 }

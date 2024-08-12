@@ -2,5 +2,5 @@
 
 public interface IReportService
 {
-    Task<IEnumerable<CountryReport>> GetCountryReportsAsync(string[] countryCodes);
+    Task<IEnumerable<CountryReport>> GetReportAsync(string[] countryCodes);
 }

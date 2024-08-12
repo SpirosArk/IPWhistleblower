@@ -5,6 +5,12 @@ using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using IPWhistleblower.Data;
+using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Configuration;
+using System.Data;
+using IPWhistleblower.Models;
+using Microsoft.IdentityModel.Tokens;
+using System.Data.Common;
 
 namespace IPWhistleblower.Controllers
 {
@@ -18,7 +24,11 @@ namespace IPWhistleblower.Controllers
         private readonly ICacheService _cacheService;
         private readonly IReportService _reportService;
 
-        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, ICacheService cacheService, IReportService reportService)
+        public IPWhistleblowerController(IIPInformationService IPService, 
+                                         ApplicationDbContext context, 
+                                         IIPAddressService ipAddressService, 
+                                         ICacheService cacheService,
+                                         IReportService reportService)
         {
             _informationService = IPService;
             _context = context;
@@ -29,12 +39,10 @@ namespace IPWhistleblower.Controllers
 
 
         [HttpGet(Name = "/api/ipinfo/{ipAddress}")]
-        public async Task<IActionResult> Get(string ipAddress)
+        public async Task<IActionResult> RetrieveIPInfo(string ipAddress)
         {
             if (!IPAddress.TryParse(ipAddress, out var _ ))                                             //Validation for quicker response
                 return BadRequest(new { Message = "Invalid IP address format." });
-
-            //var cacheKey = $"IPAddress_{ipAddress}";
 
             var cachedIP = _cacheService.Get<IP2CResponse>($"IPAddress_{ipAddress}");                   //1st search Cache with the selected key
 
@@ -52,10 +60,8 @@ namespace IPWhistleblower.Controllers
             if (newAddressInfo != null)
             {
                 await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);                 //save in Database
-                _cacheService.Set($"IPAddress_{ipAddress}", 
-                                  newAddressInfo,                                                       //save in Cache
-                                  TimeSpan.FromHours(50),
-                                  TimeSpan.FromMinutes(20));                                            //ToDo: set expiration time after implementation
+                _cacheService.Set($"IPAddress_{ipAddress}",
+                                  newAddressInfo);                                           
             }
             return Ok(newAddressInfo);
 
@@ -64,8 +70,8 @@ namespace IPWhistleblower.Controllers
         [HttpGet("report")]
         public async Task<IActionResult> GetReport([FromQuery] string[] countryCodes)
         {
-            var countryReports = await _reportService.GetCountryReportsAsync(countryCodes);
-            return Ok(countryReports);
+            var report = await _reportService.GetReportAsync(countryCodes);
+            return Ok(report);
         }
     }
 }

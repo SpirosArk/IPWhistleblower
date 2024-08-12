@@ -1,6 +1,8 @@
 ﻿using Dapper;
+using System.Text;
+using System.Data;
 using IPWhistleblower.Models;
-using Microsoft.Data.SqlClient; 
+using Microsoft.Data.SqlClient;
 
 public class ReportService : IReportService
 {
@@ -11,27 +13,35 @@ public class ReportService : IReportService
         _connectionString = connectionString;
     }
 
-    public async Task<IEnumerable<CountryReport>> GetCountryReportsAsync(string[] countryCodes)
+    public async Task<IEnumerable<CountryReport>> GetReportAsync(string[] countryCodes)
     {
-        var countryCodesSql = string.Join("','", countryCodes);
-        var sqlQuery = @"
+        var sql = new StringBuilder(@"
             SELECT
-                c.Name AS CountryName,
-                COUNT(a.IP) AS AddressesCount,
-                MAX(a.UpdatedAt) AS LastAddressUpdated
+                c.Name AS Name,
+                COUNT(ip.Id) AS AddressesCount,
+                MAX(ip.UpdatedAt) AS LastAddressUpdated
             FROM
-                IPAddresses a
-            INNER JOIN
-                Countries c ON a.CountryId = c.Id
+                IPAddresses ip
+            JOIN
+                Countries c ON ip.CountryId = c.Id");
+
+        if (countryCodes != null && countryCodes.Length > 0)
+        {
+            var formattedCountryCodes = string.Join(", ", countryCodes.Select(c => $"'{c}'"));
+            sql.Append($@"
+            WHERE
+                c.TwoLetterCode IN ({formattedCountryCodes})");
+        }
+
+        sql.Append(@"
             GROUP BY
-                c.Name
-            HAVING
-                (c.TwoLetterCode IN (@CountryCodes))";
+                c.Name");
 
-        using var connection = new SqlConnection(_connectionString);
-        await connection.OpenAsync();
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
 
-        var parameters = new { CountryCodes = countryCodesSql };
-        return await connection.QueryAsync<CountryReport>(sqlQuery, parameters);
+            return await connection.QueryAsync<CountryReport>(sql.ToString());
+        }
     }
 }

@@ -1,7 +1,7 @@
+using IPWhistleblower.Data;
 using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using IPWhistleblower.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,12 +15,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
-//builder.Services.AddHttpClient<IIPInformationService, IPInformationService>("Ip2cClient", client =>
-//{
-//    client.BaseAddress = new Uri("https://api.ip2c.org/"); // Use the correct API endpoint here
-//});
-
 builder.Services.AddHttpClient("DefaultClient");
+
 builder.Services.AddTransient<IIPInformationService, IPInformationService>();
 builder.Services.AddTransient<IIPAddressService, IPAddressService>();
 

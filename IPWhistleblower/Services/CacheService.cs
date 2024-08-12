@@ -14,23 +14,14 @@ namespace IPWhistleblower.Services
         public T Get<T>(string cacheKey)
         {
             if (_cache.TryGetValue(cacheKey, out T cachedItem))
-            {
                 return cachedItem;
-            }
+
             return default;
         }
 
-        public T Set<T>(string cacheKey, T item, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null) //ToDo: Maybe set expiration times
+        public T Set<T>(string cacheKey, T item)
         {
-            //var cacheEntryOptions = new MemoryCacheEntryOptions
-            //{
-            //    AbsoluteExpirationRelativeToNow = absoluteExpirationRelativeToNow,
-            //    SlidingExpiration = slidingExpiration,
-            //    Priority = CacheItemPriority.Normal
-            //};
-
             _cache.Set(cacheKey, item);
-            //_cache.Set(cacheKey, item, cacheEntryOptions);
             return item;
         }
 
