@@ -12,7 +12,7 @@ namespace IPWhistleblower.Services
             _httpClient = httpClientFactory.CreateClient("DefaultClient"); //TODO: Change this client maybe to a custom client for the service/ip info endpoint
         }
 
-        public async Task<IP2CResponse> GetInformationAsync(string ipAddress)
+        public async Task<IP2CResponse> GetAddressInfoAsync(string ipAddress)
         {
             var url = new Uri($"https://ip2c.org/{ipAddress}"); 
             var response = await _httpClient.GetAsync(url);

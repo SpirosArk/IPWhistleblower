@@ -4,6 +4,6 @@ namespace IPWhistleblower.Interfaces
 {
     public interface IIPInformationService
     {
-        Task<IP2CResponse> GetInformationAsync(string ipAddress);
+        Task<IP2CResponse> GetAddressInfoAsync(string ipAddress);
     }
 }
