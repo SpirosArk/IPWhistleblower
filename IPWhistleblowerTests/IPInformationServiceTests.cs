@@ -5,11 +5,11 @@ using Xunit;
 
 namespace IPWhistleblower.Tests.Services
 {
-    public class IPInformationServiceRealTests
+    public class IPInformationServiceTests
     {
         private readonly IPInformationService _service;
 
-        public IPInformationServiceRealTests()
+        public IPInformationServiceTests()
         {
             var httpClient = new HttpClient(); 
             _service = new IPInformationService(new DefaultHttpClientFactory(httpClient));
