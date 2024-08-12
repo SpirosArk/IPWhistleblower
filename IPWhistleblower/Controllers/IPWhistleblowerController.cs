@@ -48,9 +48,10 @@ namespace IPWhistleblower.Controllers
             if (newAddressInfo != null)
             {
                 await _ipAddressService.AddAddressToDbAsync(ipAddress, newAddressInfo);                 //save in Database
-                _cacheService.Set($"IPAddress_{ipAddress}", newAddressInfo,                             //save in Cache
-                                             TimeSpan.FromHours(50),
-                                             TimeSpan.FromMinutes(20));                                 //ToDo: set expiration time after implementation
+                _cacheService.Set($"IPAddress_{ipAddress}", 
+                                  newAddressInfo,                                                       //save in Cache
+                                  TimeSpan.FromHours(50),
+                                  TimeSpan.FromMinutes(20));                                            //ToDo: set expiration time after implementation
             }
             return Ok(newAddressInfo);
 
