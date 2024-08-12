@@ -1,7 +1,4 @@
-using System.Net.Http;
-using System.Threading.Tasks;
 using IPWhistleblower.Services;
-using Xunit;
 
 namespace IPWhistleblower.Tests.Services
 {

@@ -18,8 +18,4 @@
     <Folder Include="Models\" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Include="IPWhistleblowerTests.csproj" />
-  </ItemGroup>
-
 </Project>

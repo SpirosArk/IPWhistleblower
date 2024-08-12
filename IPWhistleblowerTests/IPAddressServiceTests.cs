@@ -1,6 +1,6 @@
-﻿using IPWhistleblower.Entities;
+﻿using Microsoft.Data.Sqlite;
 using IPWhistleblower.Helpers;
-using Microsoft.Data.Sqlite;
+using IPWhistleblower.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace IPWhistleblower.Tests.Services
