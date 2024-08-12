@@ -2,6 +2,7 @@ using IPWhistleblower.Helpers;
 using IPWhistleblower.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using System.Net;
 
 namespace IPWhistleblower.Controllers
@@ -13,11 +14,14 @@ namespace IPWhistleblower.Controllers
         private readonly IIPAddressService _ipAddressService;
         private readonly IIPInformationService _informationService;
         private readonly ApplicationDbContext _context;
-        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService)
+        private readonly IMemoryCache _cache;
+
+        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService, IMemoryCache cache)
         {
             _informationService = IPService;
             _context = context;
             _ipAddressService = ipAddressService;
+            _cache = cache;
         }
 
         [HttpGet(Name = "/api/ipinfo/{ipAddress}")]

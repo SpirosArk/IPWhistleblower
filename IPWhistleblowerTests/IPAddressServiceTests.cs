@@ -12,7 +12,7 @@ namespace IPWhistleblower.Tests.Services
 
         public IPAddressServiceTests()
         {
-            _connection = new SqliteConnection("DataSource=:memory:"); //Tried first to use In-Memory Testing, that does not support transactions ended up using sqlite for that reason
+            _connection = new SqliteConnection("DataSource=:memory:"); //Tried first to use In-Memory Testing, that does not support transactions, ended up using sqlite for that reason
             _connection.Open();
 
             _dbContextOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
@@ -23,6 +23,7 @@ namespace IPWhistleblower.Tests.Services
             context.Database.EnsureCreated();
         }
 
+        [Fact]
         public void Dispose()
         {
             _connection.Close();

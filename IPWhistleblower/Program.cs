@@ -2,8 +2,6 @@ using IPWhistleblower;
 using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,8 +22,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddHttpClient("DefaultClient");
 builder.Services.AddTransient<IIPInformationService, IPInformationService>();
-builder.Services.AddScoped<IIPAddressService, IPAddressService>();
-//builder.Services.AddMemoryCache();
+builder.Services.AddTransient<IIPAddressService, IPAddressService>();
+builder.Services.AddMemoryCache();
 
 var app = builder.Build();
 
