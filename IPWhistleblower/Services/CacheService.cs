@@ -1,6 +1,4 @@
 ﻿using Microsoft.Extensions.Caching.Memory;
-using System;
-using System.Threading.Tasks;
 
 namespace IPWhistleblower.Services
 {
@@ -19,10 +17,10 @@ namespace IPWhistleblower.Services
             {
                 return cachedItem;
             }
-            return default; // Return default value if item is not found
+            return default;
         }
 
-        public T Set<T>(string cacheKey, T item, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null)
+        public T Set<T>(string cacheKey, T item, TimeSpan? absoluteExpirationRelativeToNow = null, TimeSpan? slidingExpiration = null) //ToDo: Maybe set expiration times
         {
             //var cacheEntryOptions = new MemoryCacheEntryOptions
             //{
