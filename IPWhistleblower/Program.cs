@@ -12,8 +12,7 @@ builder.Services.AddSwaggerGen();
 
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"),
-        sqlServerOptions => sqlServerOptions.EnableRetryOnFailure()));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 
 //builder.Services.AddHttpClient<IIPInformationService, IPInformationService>("Ip2cClient", client =>
@@ -23,7 +22,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddHttpClient("DefaultClient");
 builder.Services.AddTransient<IIPInformationService, IPInformationService>();
-
+builder.Services.AddScoped<IIPAddressService, IPAddressService>();
 
 var app = builder.Build();
 

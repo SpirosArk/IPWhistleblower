@@ -10,12 +10,14 @@ namespace IPWhistleblower.Controllers
     [Route("[controller]")]
     public class IPWhistleblowerController : ControllerBase
     {
+        private readonly IIPAddressService _ipAddressService;
         private readonly IIPInformationService _informationService;
         private readonly ApplicationDbContext _context;
-        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context)
+        public IPWhistleblowerController(IIPInformationService IPService, ApplicationDbContext context, IIPAddressService ipAddressService)
         {
             _informationService = IPService;
             _context = context;
+            _ipAddressService = ipAddressService;
         }
 
         [HttpGet(Name = "/api/ipinfo/{ipAddress}")]
@@ -36,10 +38,12 @@ namespace IPWhistleblower.Controllers
             if (ipAddressFromDb != null)
                 return Ok(ipAddressFromDb);
            
-            var response = await _informationService.GetInformationAsync(ipAddress);
+            var addressToSave = await _informationService.GetInformationAsync(ipAddress); 
+            
+            if (addressToSave != null)
+                await _ipAddressService.AddAddressToDbAsync(ipAddress, addressToSave);
 
-
-            return Ok(response);
+            return Ok(addressToSave);
 
         }
     }
