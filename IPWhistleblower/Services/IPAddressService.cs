@@ -1,4 +1,4 @@
-﻿using IPWhistleblower;
+﻿using IPWhistleblower.Data;
 using IPWhistleblower.Entities;
 using IPWhistleblower.Helpers;
 using Microsoft.EntityFrameworkCore;

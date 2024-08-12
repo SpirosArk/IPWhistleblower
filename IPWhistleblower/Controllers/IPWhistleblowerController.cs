@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using IPWhistleblower.Data;
 
 namespace IPWhistleblower.Controllers
 {

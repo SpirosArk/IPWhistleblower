@@ -1,7 +1,7 @@
-using IPWhistleblower;
 using IPWhistleblower.Services;
 using IPWhistleblower.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using IPWhistleblower.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -29,6 +29,10 @@ builder.Services.AddSingleton<ICacheService, CacheService>();
 
 builder.Services.AddTransient<IReportService>(provider =>
             new ReportService(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+
+builder.Services.AddScoped<UpdateIPInformationService>();
+builder.Services.AddHostedService<PeriodicJobService>();
 
 var app = builder.Build();
 

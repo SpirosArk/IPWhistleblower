@@ -2,6 +2,7 @@
 using IPWhistleblower.Helpers;
 using IPWhistleblower.Entities;
 using Microsoft.EntityFrameworkCore;
+using IPWhistleblower.Data;
 
 namespace IPWhistleblower.Tests.Services
 {
