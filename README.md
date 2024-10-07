@@ -1,6 +1,6 @@
 # IPWhistleblower
 
-**A REST API to retrieve basic information about IP addresses using [IP2C](https://about.ip2c.org/#about)**
+A REST API to retrieve basic information about IP addresses using [IP2C](https://about.ip2c.org/#about)
 
 
 
